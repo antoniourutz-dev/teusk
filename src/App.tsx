@@ -32,10 +32,13 @@ export default function App() {
         
         // Map DB questions to our Question type.
         // HACK: Map ID range to level because table lacks a level column.
-        const mappedQuestions: Question[] = (data || []).map((q: any) => ({
-          ...q,
-          level: q.id < 100 ? 1 : 2 
-        }));
+        const mappedQuestions: Question[] = (data || []).map((q: any) => {
+          let level = 1;
+          if (q.id > 300) level = 4;
+          else if (q.id > 200) level = 3;
+          else if (q.id > 100) level = 2;
+          return { ...q, level };
+        });
         setAllQuestions(mappedQuestions);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Errore bat gertatu da datuak kargatzerakoan.");
@@ -108,8 +111,10 @@ export default function App() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl mb-8">
             {[
-                { level: 1, title: '1. MAILA', subtitle: 'B2 MAILAKO ERRONKA', icon: '⚡' },
-                { level: 2, title: '2. MAILA', subtitle: 'C1 MAILAKO ERRONKA', icon: '✨' }
+                { level: 1, title: '1. SORTA', subtitle: 'B2 GIDETZA', icon: '💎' },
+                { level: 2, title: '2. SORTA', subtitle: 'B2 GIDETZA', icon: '🌟' },
+                { level: 3, title: '3. SORTA', subtitle: 'C1 GIDETZA', icon: '🔥' },
+                { level: 4, title: '4. SORTA', subtitle: 'C1 GIDETZA', icon: '🚀' }
             ].map((item) => (
                 <button
                     key={item.level}
