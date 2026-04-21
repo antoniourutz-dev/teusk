@@ -1,0 +1,16 @@
+{
+  "name": "Euskarazko Test Jokoa",
+  "short_name": "EuskaraTest",
+  "description": "Joko bat euskara praktikatzeko.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
