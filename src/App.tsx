@@ -21,42 +21,35 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function fetchQuestions() {
-      try {
-        setLoading(true);
-        const { data, error } = await supabase
-          .from('atarikoa_questions')
-          .select('*');
-        
-        if (error) throw error;
-        
-        // Map DB questions to our Question type.
-        // HACK: Map ID range to level because table lacks a level column.
-        const mappedQuestions: Question[] = (data || []).map((q: any) => {
-          let level = 1;
-          if (q.id > 3000) level = 4;
-          else if (q.id > 2000) level = 3;
-          else if (q.id > 1000) level = 2;
-          return { ...q, level };
-        });
-        setAllQuestions(mappedQuestions);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Errore bat gertatu da datuak kargatzerakoan.");
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchQuestions();
+    // We no longer fetch everything at once to avoid the 1000-row limit
+    setLoading(false);
   }, []);
 
-  const startNewGame = useCallback((level: number) => {
+  const startNewGame = useCallback(async (level: number) => {
     try {
+      setLoading(true);
       setError(null);
-      const filteredQuestions = allQuestions.filter(q => q.level === level);
-      if (filteredQuestions.length === 0) {
-        throw new Error("Ezin izan dira maila honetako galderak kargatu.");
+      
+      // Calculate ID range for the selected Sorta
+      const minId = (level - 1) * 1000;
+      const maxId = level === 4 ? 999999 : level * 1000;
+
+      const { data, error: fetchError } = await supabase
+        .from('atarikoa_questions')
+        .select('*')
+        .gt('id', minId)
+        .lte('id', maxId)
+        .limit(20);
+
+      if (fetchError) throw fetchError;
+      
+      if (!data || data.length === 0) {
+        throw new Error(`Ez da galderarik aurkitu ${level}. sortan ids (${minId}-${maxId})`);
       }
-      const shuffled = [...filteredQuestions].sort(() => 0.5 - Math.random());
+
+      const mappedQuestions = data.map(q => ({ ...q, level }));
+      const shuffled = [...mappedQuestions].sort(() => 0.5 - Math.random());
+      
       setGameQuestions(shuffled.slice(0, 5));
       setCurrentIndex(0);
       setScore(0);
@@ -64,10 +57,12 @@ export default function App() {
       setShowResult(false);
       setGameState('playing');
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Errore ezezagun bat gertatu da.");
+      setError(err instanceof Error ? err.message : "Errore bat gertatu da galderak kargatzerakoan.");
       setGameState('home');
+    } finally {
+      setLoading(false);
     }
-  }, [allQuestions]);
+  }, []);
 
   const exitGame = () => {
     setGameState('home');
