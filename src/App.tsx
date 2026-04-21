@@ -34,9 +34,9 @@ export default function App() {
         // HACK: Map ID range to level because table lacks a level column.
         const mappedQuestions: Question[] = (data || []).map((q: any) => {
           let level = 1;
-          if (q.id > 300) level = 4;
-          else if (q.id > 200) level = 3;
-          else if (q.id > 100) level = 2;
+          if (q.id > 3000) level = 4;
+          else if (q.id > 2000) level = 3;
+          else if (q.id > 1000) level = 2;
           return { ...q, level };
         });
         setAllQuestions(mappedQuestions);
