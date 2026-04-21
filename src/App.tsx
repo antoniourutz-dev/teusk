@@ -109,12 +109,12 @@ export default function App() {
             </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl mb-8">
+        <div className="grid grid-cols-2 gap-8 w-full max-w-4xl mb-8">
             {[
-                { level: 1, title: '1. SORTA', subtitle: 'B2 GIDETZA', icon: '💎' },
-                { level: 2, title: '2. SORTA', subtitle: 'B2 GIDETZA', icon: '🌟' },
-                { level: 3, title: '3. SORTA', subtitle: 'C1 GIDETZA', icon: '🔥' },
-                { level: 4, title: '4. SORTA', subtitle: 'C1 GIDETZA', icon: '🚀' }
+                { level: 1, title: '1. SORTA', icon: '💎' },
+                { level: 2, title: '2. SORTA', icon: '🌟' },
+                { level: 3, title: '3. SORTA', icon: '🔥' },
+                { level: 4, title: '4. SORTA', icon: '🚀' }
             ].map((item) => (
                 <button
                     key={item.level}
@@ -125,7 +125,6 @@ export default function App() {
                         {item.icon}
                     </div>
                     <span className="text-3xl font-extrabold mb-1 tracking-tight">{item.title}</span>
-                    <span className="text-sm font-bold text-neutral-500 tracking-wider uppercase">{item.subtitle}</span>
                 </button>
             ))}
         </div>
