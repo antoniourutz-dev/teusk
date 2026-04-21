@@ -124,7 +124,7 @@ export default function App() {
                     <div className="w-16 h-16 rounded-full border-4 border-neutral-900 flex items-center justify-center text-3xl mb-6 bg-neutral-50">
                         {item.icon}
                     </div>
-                    <span className="text-3xl font-extrabold mb-1 tracking-tight">{item.title}</span>
+                    <span className="text-xl font-extrabold mb-1 tracking-tight">{item.title}</span>
                 </button>
             ))}
         </div>
