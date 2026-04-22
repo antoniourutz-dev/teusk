@@ -11,6 +11,15 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+// Global error handler to catch chunk load failures
+window.addEventListener('error', (event) => {
+  const errorMsg = event.message || '';
+  if (errorMsg.includes('Loading chunk') || errorMsg.includes('Loading failed')) {
+    console.warn('Chunk load error detected, reloading...', event);
+    window.location.reload();
+  }
+}, true);
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />

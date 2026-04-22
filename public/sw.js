@@ -1,4 +1,4 @@
-const CACHE_NAME = 'euskara-test-v2';
+const CACHE_NAME = 'euskara-test-v3';
 const ASSETS = [
   '/',
   '/index.html',
@@ -24,17 +24,43 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  const url = new URL(event.request.url);
+  
+  // Network First strategy for the root and index.html to ensure we always get the latest version
+  if (url.origin === self.location.origin && (url.pathname === '/' || url.pathname === '/index.html')) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response.status === 200) {
+            const responseToCache = response.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseToCache);
+            });
+          }
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Cache First strategy for other assets
   event.respondWith(
     caches.match(event.request).then((response) => {
       return response || fetch(event.request).then((response) => {
-        // Cache new resources on the fly
+        // Only cache valid responses from our own origin
         if (response && response.status === 200 && response.type === 'basic') {
           const responseToCache = response.clone();
           caches.open(CACHE_NAME).then((cache) => {
-             // We could cache dynamically loaded resources here
+            cache.put(event.request, responseToCache);
           });
         }
         return response;
+      }).catch((error) => {
+        // If fetch fails (e.g. offline or 404 for a missing chunk), 
+        // we return a proper error instead of letting the SW crash
+        console.error('Fetch failed for:', event.request.url, error);
+        return new Response('Network error occurred', { status: 408, statusText: 'Network Error' });
       });
     })
   );
