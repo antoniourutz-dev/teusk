@@ -1,7 +1,5 @@
-const CACHE_NAME = 'euskara-test-v3';
+const CACHE_NAME = 'euskara-test-v4';
 const ASSETS = [
-  '/',
-  '/index.html',
   '/manifest.json',
 ];
 
@@ -26,20 +24,10 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   
-  // Network First strategy for the root and index.html to ensure we always get the latest version
+  // Network Only for root and index.html to avoid version mismatches
   if (url.origin === self.location.origin && (url.pathname === '/' || url.pathname === '/index.html')) {
     event.respondWith(
-      fetch(event.request)
-        .then((response) => {
-          if (response.status === 200) {
-            const responseToCache = response.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(event.request, responseToCache);
-            });
-          }
-          return response;
-        })
-        .catch(() => caches.match(event.request))
+      fetch(event.request).catch(() => caches.match(event.request))
     );
     return;
   }
