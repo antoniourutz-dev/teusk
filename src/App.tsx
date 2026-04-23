@@ -145,12 +145,12 @@ export default function App() {
                 </button>
             ))}
             
-            <div className="col-span-1 sm:col-span-2 bg-indigo-50 border-4 border-neutral-900 p-6 md:p-8 shadow-[8px_8px_0_0_rgba(23,23,23,1)]">
-              <div className="flex flex-col items-stretch justify-between gap-6 md:gap-8">
+            <div className="col-span-2 bg-indigo-50 border-4 border-neutral-900 p-6 sm:p-8 shadow-[8px_8px_0_0_rgba(23,23,23,1)]">
+              <div className="flex flex-col items-center gap-6 md:gap-8">
                 <div className="w-full">
-                  <div className="flex justify-between items-center mb-6">
-                    <label className="font-extrabold text-xl md:text-2xl tracking-tighter uppercase">Galdera kopurua</label>
-                    <span className="text-3xl md:text-5xl font-black text-indigo-600 bg-white border-4 border-neutral-900 px-4 py-1 shadow-[4px_4px_0_0_rgba(23,23,23,1)]">{customCount}</span>
+                  <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6 text-center sm:text-left">
+                    <label className="font-black text-lg md:text-2xl tracking-tighter uppercase leading-none">Galdera kopurua</label>
+                    <span className="text-4xl md:text-5xl font-black text-indigo-600 bg-white border-4 border-neutral-900 px-4 py-1 shadow-[4px_4px_0_0_rgba(23,23,23,1)]">{customCount}</span>
                   </div>
                   <input 
                     type="range" 
@@ -169,10 +169,11 @@ export default function App() {
                   onClick={() => startNewGame(0)}
                   className={`${buttonBaseStyle} bg-indigo-500 text-white border-indigo-900 hover:bg-indigo-600 w-full py-6 md:py-8`}
                 >
-                  <div className="w-12 h-12 md:w-16 md:h-16 rounded-full border-4 border-white flex items-center justify-center text-2xl md:text-3xl mb-3 md:mb-4 bg-indigo-400">
+                  <div className="w-14 h-14 md:w-16 md:h-16 rounded-full border-4 border-white flex items-center justify-center text-3xl md:text-4xl bg-indigo-400 mb-2 sm:mb-4">
                       ⚙️
                   </div>
-                  <span className="text-xl md:text-3xl font-black tracking-tighter leading-none">MODO PERTSONALIZATUA</span>
+                  <span className="hidden sm:block text-xl md:text-3xl font-black tracking-tighter leading-none uppercase">Modo Pertsonalizatua</span>
+                  <span className="sm:hidden text-lg font-black tracking-tighter leading-none uppercase">HASI JOKOA</span>
                 </button>
               </div>
             </div>
