@@ -19,6 +19,7 @@ export default function App() {
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [customCount, setCustomCount] = useState(20);
 
   useEffect(() => {
     // We no longer fetch everything at once to avoid the 1000-row limit
@@ -30,27 +31,50 @@ export default function App() {
       setLoading(true);
       setError(null);
       
-      // Calculate ID range for the selected Sorta
-      const minId = (level - 1) * 1000;
-      const maxId = level === 4 ? 999999 : level * 1000;
+      // 1. Calculate ID range (Level 0 = All levels)
+      let minId = 0;
+      let maxId = 999999;
+      if (level > 0) {
+        minId = (level - 1) * 1000;
+        maxId = level === 4 ? 999999 : level * 1000;
+      }
+      
+      const gameLimit = level === 0 ? customCount : 5;
 
+      // 2. Get total count of questions in this range
+      const { count, error: countError } = await supabase
+        .from('atarikoa_questions')
+        .select('*', { count: 'exact', head: true })
+        .gt('id', minId)
+        .lte('id', maxId);
+
+      if (countError) throw countError;
+      const totalQuestions = count || 0;
+
+      // 3. Calculate random offset
+      // We fetch slightly more than needed to shuffle properly
+      const fetchCount = Math.max(gameLimit * 2, 20);
+      const maxOffset = Math.max(0, totalQuestions - fetchCount);
+      const randomOffset = Math.floor(Math.random() * (maxOffset + 1));
+
+      // 4. Fetch the questions
       const { data, error: fetchError } = await supabase
         .from('atarikoa_questions')
         .select('*')
         .gt('id', minId)
         .lte('id', maxId)
-        .limit(20);
+        .range(randomOffset, randomOffset + fetchCount - 1);
 
       if (fetchError) throw fetchError;
       
       if (!data || data.length === 0) {
-        throw new Error(`Ez da galderarik aurkitu ${level}. sortan ids (${minId}-${maxId})`);
+        throw new Error(`Ez da galderarik aurkitu. Hautatu beste sorta bat.`);
       }
 
       const mappedQuestions = data.map(q => ({ ...q, level }));
       const shuffled = [...mappedQuestions].sort(() => 0.5 - Math.random());
       
-      setGameQuestions(shuffled.slice(0, 5));
+      setGameQuestions(shuffled.slice(0, gameLimit));
       setCurrentIndex(0);
       setScore(0);
       setSelectedAnswer(null);
@@ -122,6 +146,35 @@ export default function App() {
                     <span className="text-xl font-extrabold mb-1 tracking-tight">{item.title}</span>
                 </button>
             ))}
+            
+            <div className="col-span-2 bg-indigo-50 border-4 border-neutral-900 p-8 shadow-[8px_8px_0_0_rgba(23,23,23,1)]">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+                <div className="flex-1 w-full">
+                  <div className="flex justify-between items-end mb-4">
+                    <label className="font-extrabold text-2xl tracking-tighter">GALDERA KOPURUA</label>
+                    <span className="text-4xl font-black text-indigo-600">{customCount}</span>
+                  </div>
+                  <input 
+                    type="range" 
+                    min="10" 
+                    max="50" 
+                    step="5"
+                    value={customCount}
+                    onChange={(e) => setCustomCount(parseInt(e.target.value))}
+                    className="w-full h-6 bg-white border-4 border-neutral-900 appearance-none cursor-pointer accent-neutral-900 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-8 [&::-webkit-slider-thumb]:h-8 [&::-webkit-slider-thumb]:bg-indigo-500 [&::-webkit-slider-thumb]:border-4 [&::-webkit-slider-thumb]:border-neutral-900"
+                  />
+                </div>
+                <button
+                  onClick={() => startNewGame(0)}
+                  className={`${buttonBaseStyle} bg-indigo-500 text-white border-indigo-900 hover:bg-indigo-600 min-w-[240px]`}
+                >
+                  <div className="w-16 h-16 rounded-full border-4 border-white flex items-center justify-center text-3xl mb-4 bg-indigo-400">
+                      ⚙️
+                  </div>
+                  <span className="text-2xl font-black tracking-tighter">MODO PERTSONALIZATUA</span>
+                </button>
+              </div>
+            </div>
         </div>
       </div>
     );
@@ -133,7 +186,7 @@ export default function App() {
         <div className="bg-white border-4 border-neutral-900 p-12 w-full max-w-lg text-center shadow-[12px_12px_0_0_rgba(23,23,23,1)]">
           <Trophy size={64} className="mx-auto text-yellow-500 mb-6" />
           <h2 className="text-5xl font-extrabold text-neutral-900 mb-4 tracking-tighter">JOKOA AMAITU DA!</h2>
-          <p className="text-2xl text-neutral-700 mb-10 font-bold">ZURE EMAITZA: <span className="font-extrabold text-indigo-600">{score} / 5</span></p>
+          <p className="text-2xl text-neutral-700 mb-10 font-bold">ZURE EMAITZA: <span className="font-extrabold text-indigo-600">{score} / {gameQuestions.length}</span></p>
           <button
             onClick={() => setGameState('home')}
             className="bg-white border-4 border-neutral-900 p-4 flex flex-col items-center text-center transition-all hover:shadow-[8px_8px_0_0_rgba(23,23,23,1)] shadow-[4px_4px_0_0_rgba(23,23,23,1)] w-full"
@@ -156,7 +209,7 @@ export default function App() {
             <RefreshCw size={24} className="text-neutral-900" />
           </button>
           <div className="font-extrabold text-neutral-900 bg-white border-4 border-neutral-900 px-6 py-2 shadow-[4px_4px_0_0_rgba(23,23,23,1)] text-lg">
-            {score} / 5
+            {score} / {gameQuestions.length}
           </div>
         </header>
 
@@ -170,7 +223,7 @@ export default function App() {
             className="bg-white border-4 border-neutral-900 p-8 shadow-[8px_8px_0_0_rgba(23,23,23,1)]"
           >
             <div className="h-4 bg-neutral-200 border-2 border-neutral-900 mb-8 p-1">
-              <div className="h-full bg-neutral-900 transition-all duration-300" style={{ width: `${((currentIndex + 1) / 5) * 100}%` }}></div>
+              <div className="h-full bg-neutral-900 transition-all duration-300" style={{ width: `${((currentIndex + 1) / gameQuestions.length) * 100}%` }}></div>
             </div>
             
             <p className="text-sm text-neutral-500 font-bold mb-2 tracking-wider uppercase">Galdera {currentIndex + 1}</p>
