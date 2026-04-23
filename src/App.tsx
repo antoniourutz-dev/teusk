@@ -115,10 +115,10 @@ export default function App() {
   
   if (gameState === 'home') {
     return (
-      <div className="min-h-screen bg-neutral-50 flex flex-col items-center justify-center p-6 text-neutral-900">
-        <p className="text-blue-500 font-bold text-xs tracking-widest uppercase mb-2">Euskaraz Ikasten Lab</p>
-        <h1 className="text-7xl font-extrabold text-neutral-900 mb-2 tracking-tighter">TEUSK</h1>
-        <div className="w-40 h-3 bg-neutral-900 mb-16"></div>
+      <div className="min-h-screen bg-neutral-50 flex flex-col items-center justify-center p-4 sm:p-6 text-neutral-900">
+        <p className="text-blue-500 font-bold text-[10px] sm:text-xs tracking-[0.2em] uppercase mb-2">Euskaraz Ikasten Lab</p>
+        <h1 className="text-5xl sm:text-7xl md:text-8xl font-black text-neutral-900 mb-2 tracking-tighter text-center">TEUSK</h1>
+        <div className="w-24 sm:w-40 h-2 sm:h-3 bg-neutral-900 mb-12 md:mb-16"></div>
 
         {error && (
             <div className="bg-red-100 border-4 border-red-900 p-4 mb-6 font-bold w-full max-w-4xl text-center">
@@ -183,11 +183,12 @@ export default function App() {
 
   if (gameState === 'gameOver') {
     return (
-      <div className="min-h-screen bg-neutral-50 flex items-center justify-center p-6">
-        <div className="bg-white border-4 border-neutral-900 p-12 w-full max-w-lg text-center shadow-[12px_12px_0_0_rgba(23,23,23,1)]">
-          <Trophy size={64} className="mx-auto text-yellow-500 mb-6" />
-          <h2 className="text-5xl font-extrabold text-neutral-900 mb-4 tracking-tighter">JOKOA AMAITU DA!</h2>
-          <p className="text-2xl text-neutral-700 mb-10 font-bold">ZURE EMAITZA: <span className="font-extrabold text-indigo-600">{score} / {gameQuestions.length}</span></p>
+      <div className="min-h-screen bg-neutral-50 flex items-center justify-center p-4 sm:p-6">
+        <div className="bg-white border-4 border-neutral-900 p-8 sm:p-12 w-full max-w-lg text-center shadow-[12px_12px_0_0_rgba(23,23,23,1)]">
+          <Trophy size={48} className="mx-auto text-yellow-500 mb-6 sm:hidden" />
+          <Trophy size={64} className="mx-auto text-yellow-500 mb-6 hidden sm:block" />
+          <h2 className="text-3xl sm:text-5xl font-black text-neutral-900 mb-4 tracking-tighter uppercase">Jokoa amaitu da!</h2>
+          <p className="text-xl sm:text-2xl text-neutral-700 mb-8 sm:mb-10 font-bold">ZURE EMAITZA: <span className="font-black text-indigo-600">{score} / {gameQuestions.length}</span></p>
           <button
             onClick={() => setGameState('home')}
             className="bg-white border-4 border-neutral-900 p-4 flex flex-col items-center text-center transition-all hover:shadow-[8px_8px_0_0_rgba(23,23,23,1)] shadow-[4px_4px_0_0_rgba(23,23,23,1)] w-full"
@@ -221,14 +222,14 @@ export default function App() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.3 }}
-            className="bg-white border-4 border-neutral-900 p-8 shadow-[8px_8px_0_0_rgba(23,23,23,1)]"
+            className="bg-white border-4 border-neutral-900 p-5 sm:p-8 shadow-[8px_8px_0_0_rgba(23,23,23,1)]"
           >
-            <div className="h-4 bg-neutral-200 border-2 border-neutral-900 mb-8 p-1">
+            <div className="h-3 sm:h-4 bg-neutral-200 border-2 border-neutral-900 mb-6 sm:mb-8 p-1">
               <div className="h-full bg-neutral-900 transition-all duration-300" style={{ width: `${((currentIndex + 1) / gameQuestions.length) * 100}%` }}></div>
             </div>
             
-            <p className="text-sm text-neutral-500 font-bold mb-2 tracking-wider uppercase">Galdera {currentIndex + 1}</p>
-            <h2 className="text-2xl md:text-3xl font-extrabold text-neutral-900 mb-8 tracking-tight">{question.question}</h2>
+            <p className="text-[10px] sm:text-sm text-neutral-500 font-bold mb-2 tracking-wider uppercase">Galdera {currentIndex + 1} / {gameQuestions.length}</p>
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-neutral-900 mb-6 sm:mb-8 tracking-tight leading-tight">{question.question}</h2>
 
             <div className="space-y-4">
               {question.candidates.map((candidate, index) => {
@@ -250,10 +251,10 @@ export default function App() {
                     onClick={() => handleAnswer(index)}
                     disabled={showResult}
                     transition={{ duration: 0.2 }}
-                    className={`w-full text-left p-4 font-bold text-lg flex items-center shadow-[4px_4px_0_0_rgba(23,23,23,1)] ${buttonStateClasses}`}
+                    className={`w-full text-left p-3 sm:p-4 font-bold text-base sm:text-lg flex items-center shadow-[4px_4px_0_0_rgba(23,23,23,1)] ${buttonStateClasses}`}
                   >
-                    <span className="w-10 h-10 flex items-center justify-center rounded-full bg-white border-4 border-neutral-900 text-neutral-900 font-extrabold mr-4">{String.fromCharCode(65 + index)}</span>
-                    {candidate}
+                    <span className="min-w-[2.5rem] h-10 flex items-center justify-center rounded-full bg-white border-4 border-neutral-900 text-neutral-900 font-black mr-3 sm:mr-4">{String.fromCharCode(65 + index)}</span>
+                    <span className="flex-1 break-words">{candidate}</span>
                   </motion.button>
                 );
               })}
