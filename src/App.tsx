@@ -52,7 +52,6 @@ export default function App() {
       const totalQuestions = count || 0;
 
       // 3. Calculate random offset
-      const gameLimit = level === 0 ? customCount : 5;
       const maxOffset = Math.max(0, totalQuestions - gameLimit);
       const randomOffset = Math.floor(Math.random() * (maxOffset + 1));
 
