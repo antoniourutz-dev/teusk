@@ -52,9 +52,8 @@ export default function App() {
       const totalQuestions = count || 0;
 
       // 3. Calculate random offset
-      // We fetch slightly more than needed to shuffle properly
-      const fetchCount = Math.max(gameLimit * 2, 20);
-      const maxOffset = Math.max(0, totalQuestions - fetchCount);
+      const gameLimit = level === 0 ? customCount : 5;
+      const maxOffset = Math.max(0, totalQuestions - gameLimit);
       const randomOffset = Math.floor(Math.random() * (maxOffset + 1));
 
       // 4. Fetch the questions
@@ -63,7 +62,7 @@ export default function App() {
         .select('*')
         .gt('id', minId)
         .lte('id', maxId)
-        .range(randomOffset, randomOffset + fetchCount - 1);
+        .range(randomOffset, randomOffset + gameLimit + 5); // Fetch a few extra for extra shuffling
 
       if (fetchError) throw fetchError;
       
@@ -128,7 +127,7 @@ export default function App() {
             </div>
         )}
 
-        <div className="grid grid-cols-2 gap-8 w-full max-w-4xl mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-8 w-full max-w-4xl mb-8">
             {[
                 { level: 1, title: '1. SORTA', icon: '💎' },
                 { level: 2, title: '2. SORTA', icon: '🌟' },
@@ -138,21 +137,21 @@ export default function App() {
                 <button
                     key={item.level}
                     onClick={() => startNewGame(item.level)}
-                    className={buttonBaseStyle}
+                    className={`${buttonBaseStyle} py-6`}
                 >
-                    <div className="w-16 h-16 rounded-full border-4 border-neutral-900 flex items-center justify-center text-3xl mb-6 bg-neutral-50">
+                    <div className="w-14 h-14 md:w-16 md:h-16 rounded-full border-4 border-neutral-900 flex items-center justify-center text-2xl md:text-3xl mb-4 md:mb-6 bg-neutral-50">
                         {item.icon}
                     </div>
-                    <span className="text-xl font-extrabold mb-1 tracking-tight">{item.title}</span>
+                    <span className="text-lg md:text-xl font-extrabold mb-1 tracking-tight">{item.title}</span>
                 </button>
             ))}
             
-            <div className="col-span-2 bg-indigo-50 border-4 border-neutral-900 p-8 shadow-[8px_8px_0_0_rgba(23,23,23,1)]">
-              <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-                <div className="flex-1 w-full">
-                  <div className="flex justify-between items-end mb-4">
-                    <label className="font-extrabold text-2xl tracking-tighter">GALDERA KOPURUA</label>
-                    <span className="text-4xl font-black text-indigo-600">{customCount}</span>
+            <div className="col-span-1 sm:col-span-2 bg-indigo-50 border-4 border-neutral-900 p-6 md:p-8 shadow-[8px_8px_0_0_rgba(23,23,23,1)]">
+              <div className="flex flex-col items-stretch justify-between gap-6 md:gap-8">
+                <div className="w-full">
+                  <div className="flex justify-between items-center mb-6">
+                    <label className="font-extrabold text-xl md:text-2xl tracking-tighter uppercase">Galdera kopurua</label>
+                    <span className="text-3xl md:text-5xl font-black text-indigo-600 bg-white border-4 border-neutral-900 px-4 py-1 shadow-[4px_4px_0_0_rgba(23,23,23,1)]">{customCount}</span>
                   </div>
                   <input 
                     type="range" 
@@ -161,17 +160,20 @@ export default function App() {
                     step="5"
                     value={customCount}
                     onChange={(e) => setCustomCount(parseInt(e.target.value))}
-                    className="w-full h-6 bg-white border-4 border-neutral-900 appearance-none cursor-pointer accent-neutral-900 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-8 [&::-webkit-slider-thumb]:h-8 [&::-webkit-slider-thumb]:bg-indigo-500 [&::-webkit-slider-thumb]:border-4 [&::-webkit-slider-thumb]:border-neutral-900"
+                    className="w-full h-8 bg-white border-4 border-neutral-900 appearance-none cursor-pointer accent-neutral-900 
+                      [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-10 [&::-webkit-slider-thumb]:h-10 
+                      [&::-webkit-slider-thumb]:bg-indigo-500 [&::-webkit-slider-thumb]:border-4 [&::-webkit-slider-thumb]:border-neutral-900
+                      [&::-moz-range-thumb]:w-10 [&::-moz-range-thumb]:h-10 [&::-moz-range-thumb]:bg-indigo-500 [&::-moz-range-thumb]:border-4 [&::-moz-range-thumb]:border-neutral-900"
                   />
                 </div>
                 <button
                   onClick={() => startNewGame(0)}
-                  className={`${buttonBaseStyle} bg-indigo-500 text-white border-indigo-900 hover:bg-indigo-600 min-w-[240px]`}
+                  className={`${buttonBaseStyle} bg-indigo-500 text-white border-indigo-900 hover:bg-indigo-600 w-full py-6 md:py-8`}
                 >
-                  <div className="w-16 h-16 rounded-full border-4 border-white flex items-center justify-center text-3xl mb-4 bg-indigo-400">
+                  <div className="w-12 h-12 md:w-16 md:h-16 rounded-full border-4 border-white flex items-center justify-center text-2xl md:text-3xl mb-3 md:mb-4 bg-indigo-400">
                       ⚙️
                   </div>
-                  <span className="text-2xl font-black tracking-tighter">MODO PERTSONALIZATUA</span>
+                  <span className="text-xl md:text-3xl font-black tracking-tighter leading-none">MODO PERTSONALIZATUA</span>
                 </button>
               </div>
             </div>
