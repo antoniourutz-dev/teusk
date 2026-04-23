@@ -84,7 +84,7 @@ export default function App() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [customCount]);
 
   const exitGame = () => {
     setGameState('home');
